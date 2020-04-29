@@ -1,0 +1,1 @@
+cmd_/home/errortime/gslx680-acpi/gslx680_ts_acpi.ko := ld -r -m elf_x86_64  -z max-page-size=0x200000  --build-id  -T ./scripts/module-common.lds -o /home/errortime/gslx680-acpi/gslx680_ts_acpi.ko /home/errortime/gslx680-acpi/gslx680_ts_acpi.o /home/errortime/gslx680-acpi/gslx680_ts_acpi.mod.o;  true
