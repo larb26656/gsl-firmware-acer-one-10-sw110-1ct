@@ -1,0 +1,58 @@
+1. Install git if not yet installed and download the firmware / tools
+
+sudo apt-get install git
+git clone https://github.com/onitake/gsl-firmware.git
+2. Extract firmware for your original windows file (you can use my in attachment to see if it works) and copy firmware to correct folder
+
+copy the SileadTouch.fw to gsl-firmware/tools and run
+
+unscramble SileadTouch.fw firmware.fw
+./fwtool -c firmware.fw -m 1680 -w 1920 -h 1080 -t 2 silead_ts.fw
+sudo cp silead_ts.fw /lib/firmware/
+3. compile and install driver
+
+go back to the folder where you cloned the firmware/tools and
+
+git clone https://github.com/onitake/gslx680-acpi.git
+cd gslx680-acpi
+make
+sudo cp gslx680_ts_acpi.ko /lib/modules/$(uname -r)/kernel/drivers/
+4. Testing
+
+at this point you can test the touchscreen.
+In the same folder as the step above just do:
+
+sudo insmod ./gslx680_ts_acpi.ko
+
+You should now have a working and not calibrated touch screen
+
+5. Calibrating touch
+
+It’s good to have a tool for that.
+Just install xinput_calibrator:
+
+sudo apt-get install xinput_calibrator
+xinput_calibrator
+and touch the screen on the points.
+
+It will output a configuration text that you should put on a file (or use mine in attachment)
+
+6. Make everything permanent:
+
+sudo gedit /usr/share/X11/xorg.conf.d/99-calibration.conf
+
+and paste your config output, or mine:
+
+Section "InputClass"
+Identifier "calibration"
+MatchProduct "Silead GSLx680 Touchscreen"
+Option "Calibration" "5 1958 26 1545"
+Option "SwapAxes" "0"
+EndSection
+As we’ve already copied the driver to /lib/modules/$(uname -r)/kernel/drivers/ now we just need to tell the system to load it on boot:
+
+sudo echo 'gslx680_ts_acpi' | sudo tee -a /etc/modules
+sudo depmod
+7. Reboot and you’re done.
+
+#Ref : https://techtablets.com/forum/topic/ezpad-5s-dual-boot-2/#post-52678
